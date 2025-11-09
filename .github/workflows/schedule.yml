@@ -1,23 +1,25 @@
-name: Daily Podcast Automation
+name: Daily Podcast Automation - The Unfiltered Record
 
 on:
-  # Schedule to run every day at 06:00 AM UTC
+  # CRON Schedule: Runs every day at 06:00 AM UTC 
+  # Adjust '0 6 * * *' to your preferred time (e.g., '0 10 * * *' for 5 AM EST)
   schedule:
     - cron: '0 6 * * *' 
-  # Allows manual triggering for testing
+  # Allows manual triggering directly from the 'Actions' tab for testing
   workflow_dispatch: 
 
 jobs:
-  run_podcast_job: # Job name
+  run_podcast_job: 
     runs-on: ubuntu-latest
     
-    # CRITICAL: Permissions block is required for Workload Identity Federation
+    # 🚨 CRITICAL: Permissions block is required for Workload Identity Federation (WIF)
     permissions:
-      id-token: write  # Allows the action to generate the OIDC token
-      contents: read   # Allows checking out the code
+      id-token: write  # Enables the GitHub OIDC token generation
+      contents: read   # Allows the action to check out the code
 
     steps:
     
+    # 1. Setup & Dependencies
     - name: Checkout repository code
       uses: actions/checkout@v4
 
@@ -26,26 +28,26 @@ jobs:
       with:
         python-version: '3.11'
         
-    - name: 'Authenticate to Google Cloud via WIF'
-      id: 'auth'
-      uses: 'google-github-actions/auth@v3'
-      with:
-        # REPLACE with your actual Service Account email
-        service_account: 'tts-podcast-sa@your-project-id.iam.gserviceaccount.com'
-        # REPLACE with the full resource path you configured in GCP
-        workload_identity_provider: 'projects/PROJECT_NUMBER/locations/global/workloadIdentityPools/github-actions-pool/providers/github'
-
+    - name: Install FFMPEG (required by pydub for audio processing)
+      run: sudo apt-get update && sudo apt-get install -y ffmpeg
+        
     - name: 'Install Python dependencies'
       run: pip install -r requirements.txt
       
+    # 2. Secure Authentication (WIF for GCP TTS)
+    - name: 'Authenticate to Google Cloud via WIF'
+      uses: 'google-github-actions/auth@v3'
+      with:
+        # ⚠️ REPLACE with your Service Account Email
+        service_account: 'gcp-tts@fluted-volt-477708-r8.iam.gserviceaccount.com '
+        # ⚠️ REPLACE with your full WIF Provider ID
+        workload_identity_provider: 'projects/754233926681/locations/global/workloadIdentityPools/github-actions-pool/providers/github-provider'
+
+    # 3. Execution
     - name: 'Run Scraper and Generate Audio'
-      # Your Python script executes, automatically picking up the credentials
-      # provided by the 'auth' step thanks to WIF.
+      # The WIF credentials are automatically available here.
       run: python main_scraper.py
       env:
-        # 1. This is the OS environment variable name your Python script will use
+        # 🔑 Must store these in GitHub Secrets 
         CONGRESS_KEY: ${{ secrets.CONGRESS_API_KEY }} 
-        # 2. Add your Groq key here too:
         GROQ_API_KEY: ${{ secrets.GROQ_API_KEY }}
-
-      
