@@ -1,29 +1,51 @@
-name: Daily Podcast Data Scraper
+name: Daily Podcast Automation
 
 on:
+  # Schedule to run every day at 06:00 AM UTC
   schedule:
-    # Runs every day at 06:00 AM UTC (adjust time zone for 6 AM EST/your preference)
     - cron: '0 6 * * *' 
-  workflow_dispatch:
+  # Allows manual triggering for testing
+  workflow_dispatch: 
 
 jobs:
-  run_scraper:
+  run_podcast_job: # Job name
     runs-on: ubuntu-latest
+    
+    # CRITICAL: Permissions block is required for Workload Identity Federation
+    permissions:
+      id-token: write  # Allows the action to generate the OIDC token
+      contents: read   # Allows checking out the code
 
     steps:
-    - name: Checkout repository
+    
+    - name: Checkout repository code
       uses: actions/checkout@v4
 
     - name: Set up Python
       uses: actions/setup-python@v5
       with:
         python-version: '3.11'
+        
+    - name: 'Authenticate to Google Cloud via WIF'
+      id: 'auth'
+      uses: 'google-github-actions/auth@v3'
+      with:
+        # REPLACE with your actual Service Account email
+        service_account: 'tts-podcast-sa@your-project-id.iam.gserviceaccount.com'
+        # REPLACE with the full resource path you configured in GCP
+        workload_identity_provider: 'projects/PROJECT_NUMBER/locations/global/workloadIdentityPools/github-actions-pool/providers/github'
 
-    - name: Install dependencies
+    - name: 'Install Python dependencies'
       run: pip install -r requirements.txt
-
-    - name: Run Scraper and Generate JSON
-      # Pass the Congress.gov API Key securely as an environment variable
+      
+    - name: 'Run Scraper and Generate Audio'
+      # Your Python script executes, automatically picking up the credentials
+      # provided by the 'auth' step thanks to WIF.
       run: python main_scraper.py
       env:
-        CONGRESS_API_KEY: ${{ secrets.CONGRESS_API_KEY }}
+        # 1. This is the OS environment variable name your Python script will use
+        CONGRESS_KEY: ${{ secrets.CONGRESS_API_KEY }} 
+        # 2. Add your Groq key here too:
+        GROQ_API_KEY: ${{ secrets.GROQ_API_KEY }}
+
+      
