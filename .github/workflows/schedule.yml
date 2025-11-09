@@ -1,1 +1,29 @@
+name: Daily Podcast Data Scraper
 
+on:
+  schedule:
+    # Runs every day at 06:00 AM UTC (adjust time zone for 6 AM EST/your preference)
+    - cron: '0 6 * * *' 
+  workflow_dispatch:
+
+jobs:
+  run_scraper:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+
+    - name: Set up Python
+      uses: actions/setup-python@v5
+      with:
+        python-version: '3.11'
+
+    - name: Install dependencies
+      run: pip install -r requirements.txt
+
+    - name: Run Scraper and Generate JSON
+      # Pass the Congress.gov API Key securely as an environment variable
+      run: python main_scraper.py
+      env:
+        CONGRESS_API_KEY: ${{ secrets.CONGRESS_API_KEY }}
