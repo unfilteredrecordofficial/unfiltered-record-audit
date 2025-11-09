@@ -1,0 +1,10 @@
+# Data Acquisition & Parsing
+requests>=2.32.5        # Latest stable is 2.32.5. We use >= for updates, but a high floor.
+beautifulsoup4>=4.14.2  # Latest stable is 4.14.2. We use >= for security/bug fixes.
+
+# Audio Processing (Older, less frequent updates - Pin to exact/high minimum)
+pydub==0.25.1           # Latest stable is 0.25.1 (from 2021). Pinning is safer here.
+
+# API Clients (Use exact client library name)
+groq
+google-cloud-texttospeech
