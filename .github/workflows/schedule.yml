@@ -41,7 +41,7 @@ jobs:
         # ⚠️ REPLACE with your Service Account Email
         service_account: 'gcp-tts@fluted-volt-477708-r8.iam.gserviceaccount.com '
         # ⚠️ REPLACE with your full WIF Provider ID
-        workload_identity_provider: 'projects/fluted-volt-477708-r8/locations/global/workloadIdentityPools/github-actions-pool/providers/github-provider'
+        workload_identity_provider: 'projects/754233926681/locations/global/workloadIdentityPools/github-actions-pool/providers/github-provider'
 
     # 3. Execution
     - name: 'Run Scraper and Generate Audio'
