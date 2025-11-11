@@ -95,7 +95,7 @@ def generate_podcast_script(bill_data, cbo_cost_text):
                 {"role": "system", "content": system_prompt},
                 {"role": "user", "content": bill_details}
             ],
-            model="mixtral-8x7b-instruct-v0.1", # Optimal balance of speed and quality
+            model="llama3-8b-8192", # Optimal balance of speed and quality
             temperature=0.4 # Lower temperature for factual consistency
         )
         return chat_completion.choices[0].message.content
