@@ -169,16 +169,28 @@ def main():
     # 1. DATA ACQUISITION 
     print("--- STEP 1: Starting Data Acquisition ---")
     
-    bill_data = fetch_latest_bill_data()
+   # bill_data = fetch_latest_bill_data()
+   # if not bill_data:
+       # print("FATAL: Could not fetch bill data. Pipeline halted.")
+      #  return
+        
+    #print(f"-> Acquired Bill: {bill_data.get('title', 'N/A')}")
+
+  bill_data = fetch_latest_bill_data()
     if not bill_data:
         print("FATAL: Could not fetch bill data. Pipeline halted.")
         return
         
     print(f"-> Acquired Bill: {bill_data.get('title', 'N/A')}")
 
-    #cbo_cost_text = scrape_cbo_cost_estimate(bill_data)
+    # CBO COST FIX: Temporarily replace the function call with static text
+    # cbo_cost_text = scrape_cbo_cost_estimate(bill_data) # <--- Keep this commented out or deleted
+    
+    # --- TEMPORARY FIX: STATIC CBO TEXT ---
     cbo_cost_text = "The Congressional Budget Office estimates the bill will cost 40 million dollars over the next five years, primarily for regulatory enforcement."
-    print(f"-> CBO Cost Summary: {cbo_cost_text[:75]}...")
+    # --- END TEMPORARY FIX ---
+    
+    print(f"-> CBO Cost Summary: {cbo_cost_text[:75]}...") # This should print the static text
 
     # 2. AI NARRATIVE ENGINE 
     print("\n--- STEP 2: Generating Podcast Script (Groq) ---")
