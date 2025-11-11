@@ -176,7 +176,8 @@ def main():
         
     print(f"-> Acquired Bill: {bill_data.get('title', 'N/A')}")
 
-    cbo_cost_text = scrape_cbo_cost_estimate(bill_data)
+    #cbo_cost_text = scrape_cbo_cost_estimate(bill_data)
+    cbo_cost_text = "The Congressional Budget Office estimates the bill will cost 40 million dollars over the next five years, primarily for regulatory enforcement."
     print(f"-> CBO Cost Summary: {cbo_cost_text[:75]}...")
 
     # 2. AI NARRATIVE ENGINE 
